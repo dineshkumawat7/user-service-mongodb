@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class UserRegisterDto {
+public class UserUpdateDto {
+    private String id;
+
     @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
@@ -20,14 +22,27 @@ public class UserRegisterDto {
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String phone;
 
-    public UserRegisterDto() {
+    @Pattern(regexp = "(http(s?):/)(/[^/]+)+\\.(?:jpg|gif|png)", message = "Invalid image URL format")
+    private String imgUrl;
+
+    public UserUpdateDto() {
     }
 
-    public UserRegisterDto(String firstName, String lastName, String email, String phone) {
+    public UserUpdateDto(String id, String firstName, String lastName, String email, String phone, String imgUrl) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
+        this.imgUrl = imgUrl;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -60,5 +75,13 @@ public class UserRegisterDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

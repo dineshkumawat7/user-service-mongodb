@@ -1,12 +1,15 @@
 package com.spring.app.entity;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Document(collection = "users")
-public class User {
+public class User implements Serializable {
     @Id
     private String id;
     private String firstName;
@@ -14,7 +17,9 @@ public class User {
     private String email;
     private String phone;
     private String imgUrl;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private boolean isValidUser;
     private boolean isValidEmail;

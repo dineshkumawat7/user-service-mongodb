@@ -2,7 +2,6 @@ package com.spring.app.exception;
 
 import com.spring.app.payload.ErrorResponse;
 import com.spring.app.payload.FieldValidationErrorResponse;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -62,6 +61,16 @@ public class GlobalExceptionHandling {
         response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(UnsupportedDtoClass.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedDtoClass(UnsupportedDtoClass e) {
+        ErrorResponse response = new ErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setSuccess(false);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)
