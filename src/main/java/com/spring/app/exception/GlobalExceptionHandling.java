@@ -1,36 +1,40 @@
 package com.spring.app.exception;
 
 import com.spring.app.payload.ErrorResponse;
-import com.spring.app.payload.FieldValidationErrorResponse;
+import com.spring.app.payload.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandling {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<FieldValidationErrorResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        FieldValidationErrorResponse<Map<String, String>> response = new FieldValidationErrorResponse<>();
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        List<ValidationErrorResponse.SimpleFieldError> errors = bindingResult.getFieldErrors().stream()
+                .map(fieldError -> {
+                    ValidationErrorResponse.SimpleFieldError error = new ValidationErrorResponse.SimpleFieldError();
+                    error.setField(fieldError.getField());
+                    error.setDefaultMessage(fieldError.getDefaultMessage());
+                    error.setRejectedValue(fieldError.getRejectedValue());
+                    return error;
+                })
+                .collect(Collectors.toList());
+        ValidationErrorResponse response = new ValidationErrorResponse();
         response.setTimestamp(LocalDateTime.now());
         response.setSuccess(false);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage("fields validation error");
-        response.setFields(errors);
-        return ResponseEntity.badRequest().body(response);
+        response.setDetails(errors);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
@@ -63,8 +67,8 @@ public class GlobalExceptionHandling {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(UnsupportedDtoClass.class)
-    public ResponseEntity<ErrorResponse> handleUnsupportedDtoClass(UnsupportedDtoClass e) {
+    @ExceptionHandler(UnsupportedDtoClassException.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedDtoClass(UnsupportedDtoClassException e) {
         ErrorResponse response = new ErrorResponse();
         response.setTimestamp(LocalDateTime.now());
         response.setSuccess(false);
