@@ -1,9 +1,8 @@
 package com.spring.app.payload;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDateTime;
 
 public class UserUpdateDto {
     private String id;
@@ -18,23 +17,35 @@ public class UserUpdateDto {
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
-    private String phone;
+    @NotBlank(message = "Mobile number is required")
+    @Pattern(
+            regexp = "^\\+[1-9]\\d{1,3}[0-9]{10,15}$",
+            message = "Invalid mobile number format"
+    )
+    private String mobileNumber;
 
     @Pattern(regexp = "(http(s?):/)(/[^/]+)+\\.(?:jpg|gif|png)", message = "Invalid image URL format")
-    private String imgUrl;
+    private String profilePictureUrl;
+
+    @Past(message = "Date of birth must be in the past")
+    private LocalDateTime dateOfBirth;
+
+    @Pattern(regexp = "^(M|F|O|)$", message = "Invalid gender. Must be M, F, or O.")
+    private String gender;
 
     public UserUpdateDto() {
     }
 
-    public UserUpdateDto(String id, String firstName, String lastName, String email, String phone, String imgUrl) {
+    public UserUpdateDto(String id, String firstName, String lastName, String email, String mobileNumber,
+                         String profilePictureUrl, LocalDateTime dateOfBirth, String gender) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.phone = phone;
-        this.imgUrl = imgUrl;
+        this.mobileNumber = mobileNumber;
+        this.profilePictureUrl = profilePictureUrl;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
     }
 
     public String getId() {
@@ -45,11 +56,11 @@ public class UserUpdateDto {
         this.id = id;
     }
 
-    public String getFirstName() {
+    public @NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters") String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(@NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters") String firstName) {
         this.firstName = firstName;
     }
 
@@ -69,19 +80,35 @@ public class UserUpdateDto {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
     }
 
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public  LocalDateTime getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDateTime dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
